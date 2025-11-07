@@ -7,23 +7,42 @@ from utils import convert_time, get_diff_hours
 # Fenêtre principale
 app = ctk.CTk()
 app.title("Horloge multi-fuseaux")
-app.geometry("700x750")
+app.geometry("600x400")
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
-# Label pour UTC
-utc_label = ctk.CTkLabel(app, text="", font=("Arial", 16))
+# Scrollable frame qui contiendra tout le contenu
+main_frame = ctk.CTkScrollableFrame(app, width=700, height=750)
+main_frame.pack(fill="both", expand=True)
+
+# --- Label UTC ---
+utc_label = ctk.CTkLabel(main_frame, text="", font=("Arial", 16))
 utc_label.pack(pady=10)
 
-# Labels pour chaque fuseau
+# --- Checkboxes ---
+select_frame = ctk.CTkFrame(main_frame)
+select_frame.pack(pady=10, fill="x")
+ctk.CTkLabel(select_frame, text="Fuseaux à afficher :", font=("Arial", 16)).pack()
+
+selected_tz = {}
+for tz in fuseaux.keys():
+    var = ctk.BooleanVar(value=True)
+    cb = ctk.CTkCheckBox(select_frame, text=display_names[tz], variable=var)
+    cb.pack(anchor="w")
+    selected_tz[tz] = var
+
+# --- Labels des fuseaux ---
+labels_frame = ctk.CTkFrame(main_frame)
+labels_frame.pack(pady=10, fill="x")
+
 labels = {}
 for tz in fuseaux.keys():
-    lbl = ctk.CTkLabel(app, text="", font=("Arial", 16))
-    lbl.pack(pady=5)
+    lbl = ctk.CTkLabel(labels_frame, text="", font=("Arial", 16))
+    lbl.pack_forget()
     labels[tz] = lbl
 
-# Section conversion horaire
-convert_frame = ctk.CTkFrame(app)
+# --- Conversion ---
+convert_frame = ctk.CTkFrame(main_frame)
 convert_frame.pack(pady=15)
 
 ctk.CTkLabel(convert_frame, text="Conversion horaire :", font=("Arial", 16)).pack(pady=5)
@@ -43,17 +62,16 @@ hour_entry.pack(pady=3)
 convert_result_label = ctk.CTkLabel(convert_frame, text="", font=("Arial", 16))
 convert_result_label.pack(pady=5)
 
-def handle_conversion():
-    result = convert_time(hour_var.get(), tz_from_var.get(), tz_to_var.get())
-    convert_result_label.configure(
-        text=f"{hour_var.get()} à {display_names[tz_from_var.get()]} → {result} à {display_names[tz_to_var.get()]}"
-    )
-
-convert_button = ctk.CTkButton(convert_frame, text="Convertir", command=handle_conversion)
+convert_button = ctk.CTkButton(convert_frame, text="Convertir", 
+                               command=lambda: convert_result_label.configure(
+                                   text=f"{hour_var.get()} à {display_names[tz_from_var.get()]} → "
+                                        f"{convert_time(hour_var.get(), tz_from_var.get(), tz_to_var.get())} "
+                                        f"à {display_names[tz_to_var.get()]}"
+                               ))
 convert_button.pack(pady=3)
 
-# Section comparaison de fuseaux
-compare_frame = ctk.CTkFrame(app)
+# --- Comparaison ---
+compare_frame = ctk.CTkFrame(main_frame)
 compare_frame.pack(pady=20)
 
 tz1_var = ctk.StringVar(value=list(fuseaux.keys())[0])
@@ -68,21 +86,26 @@ tz2_menu.pack(side="left", padx=5)
 diff_label = ctk.CTkLabel(compare_frame, text="", font=("Arial", 16))
 diff_label.pack(side="left", padx=10)
 
-# Fonction de mise à jour
+# --- Mise à jour ---
 def update_time():
     utc_now = datetime.now(pytz.utc)
     utc_label.configure(text=f"UTC : {utc_now.strftime('%H:%M:%S')}")
 
-    for tz in fuseaux.keys():
-        timezone = pytz.timezone(tz)
-        now = datetime.now(timezone)
-        abbrev = abbrev_map.get(tz, now.tzname() or now.strftime('%z'))
-        formatted = now.strftime("%H:%M")
-        labels[tz].configure(text=f"{display_names[tz]} : {formatted}")
+    for lbl in labels.values():
+        lbl.pack_forget()
 
-    # Différence fuseaux
+    for tz in fuseaux.keys():
+        if selected_tz[tz].get():
+            timezone = pytz.timezone(tz)
+            now = datetime.now(timezone)
+            formatted = now.strftime("%H:%M")
+            labels[tz].configure(text=f"{display_names[tz]} : {formatted}")
+            labels[tz].pack(pady=5)
+
     diff_hours = get_diff_hours(tz1_var.get(), tz2_var.get())
-    diff_label.configure(text=f"{display_names[tz1_var.get()]} → {display_names[tz2_var.get()]} : {diff_hours:+.1f} h")
+    diff_label.configure(
+        text=f"{display_names[tz1_var.get()]} → {display_names[tz2_var.get()]} : {diff_hours:+.1f} h"
+    )
 
     app.after(1000, update_time)
 
