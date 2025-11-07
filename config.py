@@ -1,35 +1,36 @@
 fuseaux = {
-    "Europe/Lisbon": "Lisbonne",
-    "Europe/Paris": "Paris",
-    "Europe/Moscow": "Moscou",
-    "Asia/Dubai": "Dubaï",
-    "Asia/Kolkata": "New Delhi",
-    "Asia/Shanghai": "Pékin",
-    "Asia/Tokyo": "Tokyo",
-    "Australia/Sydney": "Sydney",
-    "America/New_York": "New York",
-    "America/Chicago": "Chicago",
-    "America/Denver": "Denver",
-    "America/Los_Angeles": "Los Angeles",
-    "America/Sao_Paulo": "São Paulo",
-    "Africa/Johannesburg": "Johannesburg"
+    "Europe/Paris": "Paris (France)",
+    "Europe/Kiev": "Kiev (Ukraine)",
+    "Europe/Moscow": "Moscou (Russie)",
+    "Asia/Dubai": "Dubaï (Émirats)",
+    "Asia/Kolkata": "New Delhi (Inde)",
+    "Asia/Shanghai": "Pékin (Chine)",
+    "Asia/Tokyo": "Tokyo (Japon)",
+    "Australia/Sydney": "Sydney (Australie)",
+    "America/Los_Angeles": "Los Angeles (USA)",
+    "America/Denver": "Denver (USA)",
+    "America/Chicago": "Chicago (USA)",
+    "America/New_York": "New York (USA)",
+    "America/Sao_Paulo": "São Paulo (Brésil)",
+    "Europe/Lisbon": "Lisbonne (Portugal)"
 }
 
 abbrev_map = {
-    "Europe/Lisbon": "WET",
+    
     "Europe/Paris": "CET",
+    "Europe/Kiev": "EET",
     "Europe/Moscow": "MSK",
     "Asia/Dubai": "GST",
     "Asia/Kolkata": "IST",
     "Asia/Shanghai": "CST",
     "Asia/Tokyo": "JST",
     "Australia/Sydney": "AEST",
-    "America/New_York": "EST",
-    "America/Chicago": "CST",
-    "America/Denver": "MST",
     "America/Los_Angeles": "PST",
+    "America/Denver": "MST",
+    "America/Chicago": "CST",
+    "America/New_York": "EST",
     "America/Sao_Paulo": "BRT",
-    "Africa/Johannesburg": "SAST"
+    "Europe/Lisbon": "WET",
 }
 
 display_names = {k: f"{v} ({abbrev_map[k]})" for k, v in fuseaux.items()}

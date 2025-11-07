@@ -71,11 +71,11 @@ diff_label.pack(side="left", padx=10)
 # Fonction de mise à jour
 def update_time():
     utc_now = datetime.now(pytz.utc)
-    utc_label.configure(text=f"UTC : {utc_now.strftime('%H:%M')}")
+    utc_label.configure(text=f"UTC : {utc_now.strftime('%H:%M:%S')}")
 
     for tz in fuseaux.keys():
         timezone = pytz.timezone(tz)
-        now = timezone.localize(datetime.now())
+        now = datetime.now(timezone)
         abbrev = abbrev_map.get(tz, now.tzname() or now.strftime('%z'))
         formatted = now.strftime("%H:%M")
         labels[tz].configure(text=f"{display_names[tz]} : {formatted}")
